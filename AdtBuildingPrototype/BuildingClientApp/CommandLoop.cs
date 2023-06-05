@@ -896,16 +896,6 @@ namespace BuildingClientApp
         /// <summary>
         /// Create some twins to represent a building
         /// </summary>
-        public async Task CommandSetupBuildingScenario(string[] cmd)
-        {
-            Log.Out($"Initializing Building Scenario...");
-            var b = new BuildingScenario(this);
-            await b.InitBuilding();
-        }
-
-        /// <summary>
-        /// Create some twins to represent a building
-        /// </summary>
         public async Task CommandSetupCustomBuilding(string[] cmd)
         {
             Log.Out($"Initializing Custom Building...");
@@ -1231,7 +1221,6 @@ namespace BuildingClientApp
                 { "GetEventRoute", new CliInfo { Command=CommandGetEventRoute, Category = CliCategory.ADTRoutes, Help="<route-id>" } },
                 { "GetEventRoutes", new CliInfo { Command=CommandGetEventRoutes, Category = CliCategory.ADTRoutes, Help="" } },
                 { "DeleteEventRoute", new CliInfo { Command=CommandDeleteEventRoute, Category = CliCategory.ADTRoutes, Help="<route-id>" } },
-                { "SetupBuildingScenario", new CliInfo { Command=CommandSetupBuildingScenario, Category = CliCategory.SampleScenario, Help="loads a set of models and creates a very simple example twins graph" } },
                 { "SetupCustomBuilding", new CliInfo { Command=CommandSetupCustomBuilding, Category = CliCategory.SampleScenario, Help="<location-name> <number-floors> <number-rooms>" } },
                 { "ObserveProperties", new CliInfo { Command=CommandObserveProperties, Category = CliCategory.SampleScenario, Help="<twin id> <propertyName> <twin-id> <property name>... observes the selected properties on the selected twins" } },
                 { "DeleteAllTwins", new CliInfo { Command=CommandDeleteAllTwins, Category = CliCategory.SampleTools, Help="Deletes all the twins in your instance" } },
