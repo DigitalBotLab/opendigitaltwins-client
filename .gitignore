@@ -6,3 +6,8 @@ DeviceSimulator/DeviceSimulator/bin/
 DeviceSimulator/DeviceSimulator/obj/
 DeviceSimulator/Thermostat-UI/bin/
 DeviceSimulator/Thermostat-UI/obj/
+/AdtBuildingPrototype/.vs/BuildingPrototype
+/AdtBuildingPrototype/BuildingClientApp/bin/Debug/netcoreapp3.1
+/AdtBuildingPrototype/BuildingClientApp/obj
+/AdtBuildingPrototype/BuildingFunctionsApp/bin/Debug/netcoreapp3.1
+/AdtBuildingPrototype/BuildingFunctionsApp/obj/Debug/netcoreapp3.1
