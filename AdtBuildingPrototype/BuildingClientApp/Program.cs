@@ -38,6 +38,8 @@ namespace BuildingClientApp
             Log.Ok($"Service client created – ready to go");
 
             var CommandLoopInst = new CommandLoop(client);
+
+            await CommandLoopInst.CommandHelp(new string[] { "help" });
             await CommandLoopInst.CliCommandInterpreter();
         }
 

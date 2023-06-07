@@ -25,6 +25,56 @@ namespace BuildingClientApp
         /// <summary>
         /// Uploads a model from a DTDL interface (often a JSON file)
         /// </summary>
+        public async Task CommandCreateModelsFromFile(string[] cmd)
+        {
+            if (cmd.Length < 2)
+            {
+                Log.Error("Please supply at least one model file name to upload to the service");
+                return;
+            }
+            string[] modelArray = cmd.Skip(1).ToArray();
+            string filename;
+            string[] filenameArray = new string[modelArray.Length];
+            for (int i = 0; i < filenameArray.Length; i++)
+            {
+                filenameArray[i] = !(modelArray[i].EndsWith(".json") | modelArray[i].EndsWith(".dtdl")) ? $"{modelArray[i]}.json" : modelArray[i];
+            }
+
+            string repoBase = Directory.GetCurrentDirectory().Replace("\\opendigitaltwins-client\\AdtBuildingPrototype\\BuildingClientApp\\bin\\Debug\\netcoreapp3.1", "");
+            string ontologyDir = Path.Combine(repoBase, "opendigitaltwins-building\\");
+
+            Log.Alert($"Reading from {ontologyDir}");
+            Log.Alert(string.Format("Submitting models: {0}...", string.Join(", ", filenameArray)));
+
+            try
+            {
+                List<string> dtdlList = new List<string>();
+                for (int i = 0; i < filenameArray.Length; i++)
+                {
+                    filename = Path.Combine(ontologyDir, filenameArray[i]);
+                    StreamReader r = new StreamReader(filename);
+                    string dtdl = r.ReadToEnd();
+                    r.Close();
+                    dtdlList.Add(dtdl);
+                }
+                Response<DigitalTwinsModelData[]> res = await client.CreateModelsAsync(dtdlList);
+                Log.Ok($"Model(s) created successfully!");
+                  foreach (DigitalTwinsModelData md in res.Value)
+                    LogResponse(md.DtdlModel);
+            }
+            catch (RequestFailedException e)
+            {
+                Log.Error($"Response {e.Status}: {e.Message}");
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Uploads a model from a DTDL interface (often a JSON file)
+        /// </summary>
         public async Task CommandCreateModels(string[] cmd)
         {
             if (cmd.Length < 2)
@@ -1202,30 +1252,30 @@ namespace BuildingClientApp
             commands = new Dictionary<string, CliInfo>
             {
                 { "Help", new CliInfo { Command=CommandHelp, Category = CliCategory.SampleTools, Help="List all commands" } },
-                { "CreateModels", new CliInfo { Command=CommandCreateModels, Category = CliCategory.ADTModels, Help="<model-filename-0> <model-filename-1> ..." } },
-                { "GetModels", new CliInfo { Command=CommandGetModels, Category = CliCategory.ADTModels, Help="[true] option to include full model definition [model-id]... optional model-ids to get dependencies for" } },
-                { "GetModel", new CliInfo { Command=CommandGetModel, Category = CliCategory.ADTModels, Help = "<model-id>" } },
-                { "DecommissionModel", new CliInfo { Command=CommandDecommissionModel, Category = CliCategory.ADTModels, Help="<model-id> " } },
-                { "DeleteModel", new CliInfo { Command=CommandDeleteModel, Category = CliCategory.ADTModels, Help="<model-id>" } },
-                { "Query", new CliInfo { Command=CommandQuery, Category = CliCategory.ADTQuery, Help="[query-string] (default query is 'SELECT * FROM DIGITAL TWINS')" } },
-                { "CreateDigitalTwin", new CliInfo { Command=CommandCreateDigitalTwin, Category = CliCategory.ADTTwins, Help="<model-id> <twin-id> <property-name-0> <prop-type-0> <prop-value-0> ..." } },
-                { "UpdateDigitalTwin", new CliInfo { Command=CommandUpdateDigitalTwin, Category = CliCategory.ADTTwins, Help="<twin-id> <operation-0> <path-0> <value-schema-0> <value-0> ..." } },
-                { "GetDigitalTwin", new CliInfo { Command=CommandGetDigitalTwin, Category = CliCategory.ADTTwins, Help="<twin-id>" } },
-                { "DeleteDigitalTwin", new CliInfo { Command=CommandDeleteDigitalTwin, Category = CliCategory.ADTTwins, Help="<twin-id>" } },
-                { "CreateRelationship", new CliInfo { Command=CommandCreateRelationship, Category = CliCategory.ADTTwins, Help="<source-twin-id> <relationship-name> <target-twin-id> <relationship-id> <property-name-0> <prop-type-0> <prop-value-0> ..." } },
-                { "DeleteRelationship", new CliInfo { Command=CommandDeleteRelationship, Category = CliCategory.ADTTwins, Help="<source-twin-id> <relationship-name> <relationship-id>" } },
-                { "GetRelationships", new CliInfo { Command=CommandGetRelationships, Category = CliCategory.ADTTwins, Help="twin-id" } },
-                { "GetRelationship", new CliInfo { Command=CommandGetRelationshipAsync, Category = CliCategory.ADTTwins, Help="<source-twin-id> <relationship-id>" } },
-                { "GetIncomingRelationships", new CliInfo { Command=CommandGetIncomingRelationships, Category = CliCategory.ADTTwins, Help="<source-twin-id>" } },
-                { "CreateEventRoute", new CliInfo { Command=CommandCreateEventRoute, Category = CliCategory.ADTRoutes, Help="<route-id> <endpoint-id> <filter>" } },
-                { "GetEventRoute", new CliInfo { Command=CommandGetEventRoute, Category = CliCategory.ADTRoutes, Help="<route-id>" } },
-                { "GetEventRoutes", new CliInfo { Command=CommandGetEventRoutes, Category = CliCategory.ADTRoutes, Help="" } },
-                { "DeleteEventRoute", new CliInfo { Command=CommandDeleteEventRoute, Category = CliCategory.ADTRoutes, Help="<route-id>" } },
+                //{ "CreateModels", new CliInfo { Command=CommandCreateModels, Category = CliCategory.ADTModels, Help="<model-filename-0> <model-filename-1> ..." } },
+                //{ "GetModels", new CliInfo { Command=CommandGetModels, Category = CliCategory.ADTModels, Help="[true] option to include full model definition [model-id]... optional model-ids to get dependencies for" } },
+                //{ "GetModel", new CliInfo { Command=CommandGetModel, Category = CliCategory.ADTModels, Help = "<model-id>" } },
+                //{ "DecommissionModel", new CliInfo { Command=CommandDecommissionModel, Category = CliCategory.ADTModels, Help="<model-id> " } },
+                //{ "DeleteModel", new CliInfo { Command=CommandDeleteModel, Category = CliCategory.ADTModels, Help="<model-id>" } },
+                //{ "Query", new CliInfo { Command=CommandQuery, Category = CliCategory.ADTQuery, Help="[query-string] (default query is 'SELECT * FROM DIGITAL TWINS')" } },
+                //{ "CreateDigitalTwin", new CliInfo { Command=CommandCreateDigitalTwin, Category = CliCategory.ADTTwins, Help="<model-id> <twin-id> <property-name-0> <prop-type-0> <prop-value-0> ..." } },
+                //{ "UpdateDigitalTwin", new CliInfo { Command=CommandUpdateDigitalTwin, Category = CliCategory.ADTTwins, Help="<twin-id> <operation-0> <path-0> <value-schema-0> <value-0> ..." } },
+                //{ "GetDigitalTwin", new CliInfo { Command=CommandGetDigitalTwin, Category = CliCategory.ADTTwins, Help="<twin-id>" } },
+                //{ "DeleteDigitalTwin", new CliInfo { Command=CommandDeleteDigitalTwin, Category = CliCategory.ADTTwins, Help="<twin-id>" } },
+                //{ "CreateRelationship", new CliInfo { Command=CommandCreateRelationship, Category = CliCategory.ADTTwins, Help="<source-twin-id> <relationship-name> <target-twin-id> <relationship-id> <property-name-0> <prop-type-0> <prop-value-0> ..." } },
+                //{ "DeleteRelationship", new CliInfo { Command=CommandDeleteRelationship, Category = CliCategory.ADTTwins, Help="<source-twin-id> <relationship-name> <relationship-id>" } },
+                //{ "GetRelationships", new CliInfo { Command=CommandGetRelationships, Category = CliCategory.ADTTwins, Help="twin-id" } },
+                //{ "GetRelationship", new CliInfo { Command=CommandGetRelationshipAsync, Category = CliCategory.ADTTwins, Help="<source-twin-id> <relationship-id>" } },
+                //{ "GetIncomingRelationships", new CliInfo { Command=CommandGetIncomingRelationships, Category = CliCategory.ADTTwins, Help="<source-twin-id>" } },
+                //{ "CreateEventRoute", new CliInfo { Command=CommandCreateEventRoute, Category = CliCategory.ADTRoutes, Help="<route-id> <endpoint-id> <filter>" } },
+                //{ "GetEventRoute", new CliInfo { Command=CommandGetEventRoute, Category = CliCategory.ADTRoutes, Help="<route-id>" } },
+                //{ "GetEventRoutes", new CliInfo { Command=CommandGetEventRoutes, Category = CliCategory.ADTRoutes, Help="" } },
+                //{ "DeleteEventRoute", new CliInfo { Command=CommandDeleteEventRoute, Category = CliCategory.ADTRoutes, Help="<route-id>" } },
                 { "SetupCustomBuilding", new CliInfo { Command=CommandSetupCustomBuilding, Category = CliCategory.SampleScenario, Help="<location-name> <number-floors> <number-rooms>" } },
                 { "ObserveProperties", new CliInfo { Command=CommandObserveProperties, Category = CliCategory.SampleScenario, Help="<twin id> <propertyName> <twin-id> <property name>... observes the selected properties on the selected twins" } },
-                { "DeleteAllTwins", new CliInfo { Command=CommandDeleteAllTwins, Category = CliCategory.SampleTools, Help="Deletes all the twins in your instance" } },
-                { "DeleteAllModels", new CliInfo { Command=CommandDeleteAllModels, Category = CliCategory.SampleTools, Help="Deletes all models in your instance" } },
-                { "LoadModelsFromDirectory", new CliInfo { Command=CommandLoadModels, Category = CliCategory.SampleTools, Help="<directory-path> <extension(json by default)> [nosub]" } },
+                //{ "DeleteAllTwins", new CliInfo { Command=CommandDeleteAllTwins, Category = CliCategory.SampleTools, Help="Deletes all the twins in your instance" } },
+                //{ "DeleteAllModels", new CliInfo { Command=CommandDeleteAllModels, Category = CliCategory.SampleTools, Help="Deletes all models in your instance" } },
+                //{ "LoadModelsFromDirectory", new CliInfo { Command=CommandLoadModels, Category = CliCategory.SampleTools, Help="<directory-path> <extension(json by default)> [nosub]" } },
                 { "Exit", new CliInfo { Command=CommandExit, Category = CliCategory.SampleTools, Help="Exits the program" } },
             };
         }
@@ -1246,8 +1296,6 @@ namespace BuildingClientApp
             Log.Out("");
             if (args != null && args.Length < 2)
             {
-                Log.Alert("Scenario Demo Commands:");
-                CliPrintCategoryCommands(CliCategory.SampleScenario);
                 Log.Alert("Some ADT Commands for Model Management:");
                 CliPrintCategoryCommands(CliCategory.ADTModels);
                 Log.Alert("Some ADT Commands for Twins:");
@@ -1258,6 +1306,8 @@ namespace BuildingClientApp
                 CliPrintCategoryCommands(CliCategory.ADTRoutes);
                 Log.Alert("Others:");
                 CliPrintCategoryCommands(CliCategory.SampleTools);
+                Log.Alert("Scenario Demo Commands:");
+                CliPrintCategoryCommands(CliCategory.SampleScenario);
             }
 
             return Task.CompletedTask;
