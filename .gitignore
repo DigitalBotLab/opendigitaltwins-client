@@ -11,3 +11,7 @@ DeviceSimulator/Thermostat-UI/obj/
 /AdtBuildingPrototype/BuildingClientApp/obj
 /AdtBuildingPrototype/BuildingFunctionsApp/bin/Debug/netcoreapp3.1
 /AdtBuildingPrototype/BuildingFunctionsApp/obj/Debug/netcoreapp3.1
+/AdtBuildingPrototype/BuildingFunctionsApp/bin/Release/netcoreapp3.1
+/AdtBuildingPrototype/BuildingFunctionsApp/obj/Release/netcoreapp3.1
+/AdtBuildingPrototype/BuildingFunctionsApp/local.settings.json
+/AdtBuildingPrototype/BuildingClientApp/appsettings.json

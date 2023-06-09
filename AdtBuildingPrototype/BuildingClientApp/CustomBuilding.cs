@@ -15,34 +15,17 @@ namespace BuildingClientApp
             Log.Alert($"Deleting all twins...");
             await cl.DeleteAllTwinsAsync();
             Log.Out($"Creating {floors} floors, {rooms} rooms and {rooms} thermostats in {location}");
-            await InitializeModels();
-
             await InitializeGraph(location, floors, rooms);
-        }
-
-        private async Task InitializeModels()
-        {
-
-            string[] modelsToUpload = new string[7] { 
-                "CreateModels",
-                "Ontology\\Space\\Building\\VirtualBuilding.json",
-                "Ontology\\Space\\Level\\Level.json",
-                "Ontology\\Space\\Room\\Office\\OfficeRoom.json",
-                "Ontology\\Asset\\Equipment\\ICTEquipment\\SensorEquipment\\ThermostatEquipment.json",
-                "Ontology\\Asset\\Equipment\\ICTEquipment\\SensorEquipment\\OccupancySensorEquipment.json",
-                "Ontology\\Capability\\Sensor\\QuantitySensor\\TemperatureSensor\\TemperatureSensor.json"
-            };
-
-            Log.Out($"Uploading {string.Join(", ", modelsToUpload)} models");
-
-            await cl.CommandCreateModelsFromFile(modelsToUpload);
-
-            Log.Out($"Creating Building, Floors, Rooms and Thermostats...");
         }
 
         private async Task InitializeGraph(string location, int floors, int rooms)
         {
-           
+            string[] modelsToUpload = new string[5] { "CreateModels", "Building", "Floor", "ThermostatModel", "RoomModel" };
+            Log.Out($"Uploading {string.Join(", ", modelsToUpload)} models");
+
+            await cl.CommandCreateModels(modelsToUpload);
+
+            Log.Out($"Creating Building, Floors, Rooms and Thermostats...");
 
             string buildingId = string.Format("building1");
             string bldName = location + " building.";
@@ -79,11 +62,11 @@ namespace BuildingClientApp
                 //Create Rooms
                 for (int j = 1; j <= rooms; j++)
                 {
-                    string roomId = string.Format("room{0}-{1}", i,j);
-                    string roomName = string.Format("Room {0}-{1}", i,j);
+                    string roomId = string.Format("room{0}-{1}", i, j);
+                    string roomName = string.Format("Room {0}-{1}", i, j);
 
-                    string thermoId = string.Format("thermostat{0}-{1}",i,j);
-                    string thermoName = string.Format("Thermostat {0}-{1}",i,j);
+                    string thermoId = string.Format("thermostat{0}-{1}", i, j);
+                    string thermoName = string.Format("Thermostat {0}-{1}", i, j);
                     string rel1 = string.Format("{0}_to_{1}_edge", floorId, roomId);
                     string rel2 = string.Format("{0}-{1}_to_{2}_edge", floorId, roomId, thermoId);
 
