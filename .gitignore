@@ -24,3 +24,11 @@ DeviceSimulator/Thermostat-UI/obj/
 AdtBuildingPrototype/.vs/ProjectEvaluation/buildingprototype.projects.v6.1
 AdtBuildingPrototype/.vs/ProjectEvaluation/buildingprototype.metadata.v6.1
 /AdtBuildingPrototype/BuildingFunctionsApp/obj
+AdtBuildingPrototype/BuildingFunctionsApp/Properties/PublishProfiles/twins-func-6uad - Zip Deploy.pubxml
+AdtBuildingPrototype/BuildingFunctionsApp/Properties/PublishProfiles/twins-func-6uad - Zip Deploy.pubxml.user
+AdtBuildingPrototype/BuildingFunctionsApp/Properties/serviceDependencies.twins-func-6uad - Zip Deploy.json
+AdtBuildingPrototype/BuildingFunctionsApp/Properties/serviceDependencies.twins-func-6uad - Zip Deploy.json.user
+AdtBuildingPrototype/BuildingFunctionsApp/Properties/ServiceDependencies/twins-func-6uad - Zip Deploy/appInsights1.arm.json
+AdtBuildingPrototype/BuildingFunctionsApp/Properties/ServiceDependencies/twins-func-6uad - Zip Deploy/storage1.arm.json
+AdtBuildingPrototype/Thermostat-UI/Properties/launchSettings.json
+AdtBuildingPrototype/Thermostat-UI/Properties/launchSettings.json
