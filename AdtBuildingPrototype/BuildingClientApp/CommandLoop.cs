@@ -1,5 +1,7 @@
 ﻿using Azure;
 using Azure.DigitalTwins.Core;
+using Microsoft.Azure.Devices.Shared;
+using Microsoft.Azure.Devices;
 using Microsoft.Azure.DigitalTwins.Parser;
 using System;
 using System.Collections.Generic;
@@ -9,18 +11,23 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace BuildingClientApp
 {
     public class CommandLoop
     {
         private readonly DigitalTwinsClient client;
+        private readonly AzureIoTHub hub;
 
-        public CommandLoop(DigitalTwinsClient client)
+        public CommandLoop(DigitalTwinsClient client, AzureIoTHub hub)
         {
             this.client = client;
+            this.hub = hub;
             CliInitialize();
         }
+
+        #region Models
 
         /// <summary>
         /// Uploads a model from a DTDL interface (often a JSON file)
@@ -308,6 +315,140 @@ namespace BuildingClientApp
             }
         }
 
+        public async Task CommandLoadModels(string[] cmd)
+        {
+            if (cmd.Length < 2)
+            {
+                Log.Error("Please provide a directory path to load models from");
+                return;
+            }
+            string directory = cmd[1];
+
+            string extension = "json";
+            if (cmd.Length > 2)
+            {
+                extension = cmd[2];
+            }
+            bool recursive = true;
+            if (cmd.Length > 3)
+            {
+                if (cmd[3] == "nosub")
+                    recursive = false;
+                else
+                    Log.Error("If you pass more than two parameters, the third parameter must be 'nosub' to skip recursive load");
+            }
+
+            DirectoryInfo dinfo;
+            try
+            {
+                dinfo = new DirectoryInfo(directory);
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Error accessing the target directory '{directory}': \n{e.Message}");
+                return;
+            }
+            Log.Alert($"Loading *.{extension} files in folder '{dinfo.FullName}'.\nRecursive is set to {recursive}\n");
+            if (dinfo.Exists == false)
+            {
+                Log.Error($"Specified directory '{directory}' does not exist: Exiting...");
+                return;
+            }
+            else
+            {
+                SearchOption searchOpt = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+                var files = dinfo.EnumerateFiles($"*.{extension}", searchOpt);
+                if (files.Count() == 0)
+                {
+                    Log.Alert("No matching files found.");
+                    return;
+                }
+                Dictionary<FileInfo, string> modelDict = new Dictionary<FileInfo, string>();
+                int count = 0;
+                string lastFile = "<none>";
+                try
+                {
+                    foreach (FileInfo fi in files)
+                    {
+                        string dtdl = File.ReadAllText(fi.FullName);
+                        modelDict.Add(fi, dtdl);
+                        lastFile = fi.FullName;
+                        count++;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Could not read files. \nLast file read: {lastFile}\nError: \n{e.Message}");
+                    return;
+                }
+                Log.Ok($"Read {count} files from specified directory");
+                int errJson = 0;
+                foreach (FileInfo fi in modelDict.Keys)
+                {
+                    modelDict.TryGetValue(fi, out string dtdl);
+                    try
+                    {
+                        JsonDocument.Parse(dtdl);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error($"Invalid json found in file {fi.FullName}.\nJson parser error \n{e.Message}");
+                        errJson++;
+                    }
+                }
+                if (errJson > 0)
+                {
+                    Log.Error($"\nFound  {errJson} Json parsing errors");
+                    return;
+                }
+                Log.Ok($"Validated JSON for all files - now validating DTDL");
+                var modelList = modelDict.Values.ToList<string>();
+                var parser = new ModelParser();
+                try
+                {
+                    IReadOnlyDictionary<Dtmi, DTEntityInfo> om = await parser.ParseAsync(modelList);
+                    Log.Out("");
+                    Log.Ok($"**********************************************");
+                    Log.Ok($"** Validated all files - Your DTDL is valid **");
+                    Log.Ok($"**********************************************");
+                    Log.Out($"Found a total of {om.Keys.Count()} entities in the DTDL");
+
+                    try
+                    {
+                        await client.CreateModelsAsync(modelList);
+                        Log.Ok($"**********************************************");
+                        Log.Ok($"** Models uploaded successfully **************");
+                        Log.Ok($"**********************************************");
+                    }
+                    catch (RequestFailedException ex)
+                    {
+                        Log.Error($"*** Error uploading models: {ex.Status}/{ex.ErrorCode}");
+                        return;
+                    }
+                }
+                catch (ParsingException pe)
+                {
+                    Log.Error($"*** Error parsing models");
+                    int derrcount = 1;
+                    foreach (ParsingError err in pe.Errors)
+                    {
+                        Log.Error($"Error {derrcount}:");
+                        Log.Error($"{err.Message}");
+                        Log.Error($"Primary ID: {err.PrimaryID}");
+                        Log.Error($"Secondary ID: {err.SecondaryID}");
+                        Log.Error($"Property: {err.Property}\n");
+                        derrcount++;
+                    }
+                    return;
+                }
+            }
+        }
+
+
+        #endregion
+
+        #region "Twins"
+
         /// <summary>
         /// Query your digital twins graph
         /// </summary>
@@ -329,6 +470,34 @@ namespace BuildingClientApp
                     LogResponse(JsonSerializer.Serialize(item));
             }
             Log.Out("End Query");
+        }
+
+        public async Task<List<BasicDigitalTwin>> CommandQueryThermostats(string[] cmd)
+        {
+            List<BasicDigitalTwin> therms = new List<BasicDigitalTwin>();
+            string query = "SELECT * FROM DIGITALTWINS";
+            if (cmd.Length > 1)
+            {
+                var sb = new StringBuilder();
+                for (int i = 1; i < cmd.Length; i++)
+                    sb.Append(cmd[i] + " ");
+                query = sb.ToString();
+            }
+            Log.Alert($"Submitting query: {query}...");
+            List<BasicDigitalTwin> reslist = await Query(query);
+            if (reslist != null)
+            {
+                foreach (BasicDigitalTwin item in reslist)
+                {
+                    LogResponse(JsonSerializer.Serialize(item));
+                    if (item.Id.Contains("thermostat"))
+                    {
+                        therms.Add(item);
+                    }
+                }
+            }
+            Log.Out("End Query");
+            return therms;
         }
 
         private async Task<List<BasicDigitalTwin>> Query(string query)
@@ -914,135 +1083,87 @@ namespace BuildingClientApp
             await b.InitBuilding(location, floors, rooms);
         }
 
+        #endregion
 
-        public async Task CommandLoadModels(string[] cmd)
+
+        #region "IoTHub
+
+        
+        public async Task CommandDeleteAllDevices(string[] cmd) 
         {
-            if (cmd.Length < 2)
-            {
-                Log.Error("Please provide a directory path to load models from");
-                return;
-            }
-            string directory = cmd[1];
+            await hub.DeleteDevicesAsync();
+        }
 
-            string extension = "json";
-            if (cmd.Length > 2)
-            {
-                extension = cmd[2];
-            }
-            bool recursive = true;
-            if (cmd.Length > 3)
-            {
-                if (cmd[3] == "nosub")
-                    recursive = false;
-                else
-                    Log.Error("If you pass more than two parameters, the third parameter must be 'nosub' to skip recursive load");
-            }
+        public async Task CommandListThermostats(string[] cmd)
+        {
+            var thems = await hub.GetDevices();
 
-            DirectoryInfo dinfo;
             try
             {
-                dinfo = new DirectoryInfo(directory);
+                if (thems != null)
+                {
+                    Log.Out($"Listing Thermostats...");
+                    foreach (Device twin in thems)
+                    {
+                        Log.Out($"{twin.Id}");
+                    }
+                }
             }
-            catch (Exception e)
+            catch (RequestFailedException ex)
             {
-                Log.Error($"Error accessing the target directory '{directory}': \n{e.Message}");
-                return;
-            }
-            Log.Alert($"Loading *.{extension} files in folder '{dinfo.FullName}'.\nRecursive is set to {recursive}\n");
-            if (dinfo.Exists == false)
-            {
-                Log.Error($"Specified directory '{directory}' does not exist: Exiting...");
-                return;
-            }
-            else
-            {
-                SearchOption searchOpt = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-                var files = dinfo.EnumerateFiles($"*.{extension}", searchOpt);
-                if (files.Count() == 0)
-                {
-                    Log.Alert("No matching files found.");
-                    return;
-                }
-                Dictionary<FileInfo, string> modelDict = new Dictionary<FileInfo, string>();
-                int count = 0;
-                string lastFile = "<none>";
-                try
-                {
-                    foreach (FileInfo fi in files)
-                    {
-                        string dtdl = File.ReadAllText(fi.FullName);
-                        modelDict.Add(fi, dtdl);
-                        lastFile = fi.FullName;
-                        count++;
-                    }
-                }
-                catch (Exception e)
-                {
-                    Log.Error($"Could not read files. \nLast file read: {lastFile}\nError: \n{e.Message}");
-                    return;
-                }
-                Log.Ok($"Read {count} files from specified directory");
-                int errJson = 0;
-                foreach (FileInfo fi in modelDict.Keys)
-                {
-                    modelDict.TryGetValue(fi, out string dtdl);
-                    try
-                    {
-                        JsonDocument.Parse(dtdl);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error($"Invalid json found in file {fi.FullName}.\nJson parser error \n{e.Message}");
-                        errJson++;
-                    }
-                }
-                if (errJson > 0)
-                {
-                    Log.Error($"\nFound  {errJson} Json parsing errors");
-                    return;
-                }
-                Log.Ok($"Validated JSON for all files - now validating DTDL");
-                var modelList = modelDict.Values.ToList<string>();
-                var parser = new ModelParser();
-                try
-                {
-                    IReadOnlyDictionary<Dtmi, DTEntityInfo> om = await parser.ParseAsync(modelList);
-                    Log.Out("");
-                    Log.Ok($"**********************************************");
-                    Log.Ok($"** Validated all files - Your DTDL is valid **");
-                    Log.Ok($"**********************************************");
-                    Log.Out($"Found a total of {om.Keys.Count()} entities in the DTDL");
-
-                    try
-                    {
-                        await client.CreateModelsAsync(modelList);
-                        Log.Ok($"**********************************************");
-                        Log.Ok($"** Models uploaded successfully **************");
-                        Log.Ok($"**********************************************");
-                    }
-                    catch (RequestFailedException ex)
-                    {
-                        Log.Error($"*** Error uploading models: {ex.Status}/{ex.ErrorCode}");
-                        return;
-                    }
-                }
-                catch (ParsingException pe)
-                {
-                    Log.Error($"*** Error parsing models");
-                    int derrcount = 1;
-                    foreach (ParsingError err in pe.Errors)
-                    {
-                        Log.Error($"Error {derrcount}:");
-                        Log.Error($"{err.Message}");
-                        Log.Error($"Primary ID: {err.PrimaryID}");
-                        Log.Error($"Secondary ID: {err.SecondaryID}");
-                        Log.Error($"Property: {err.Property}\n");
-                        derrcount++;
-                    }
-                    return;
-                }
+                Log.Error($"*** Error {ex.Status}/{ex.ErrorCode} due to {ex.Message}");
             }
         }
+
+        public async Task CommandCreateThermostats(string[] cmd)
+        {
+            var thems = await  CommandQueryThermostats(cmd);
+            string twinId = "";
+
+            try {
+                if (thems != null)
+                {
+                    Log.Out($"Creating Thermostats...");
+                    foreach (BasicDigitalTwin twin in thems)
+                    {
+                        twinId = twin.Id;
+                        await hub.CreateDeviceIdentityAsync(twinId);
+                        Log.Out($"Created thermostat {twinId}");
+                    }
+                }
+            }
+            catch (RequestFailedException ex)
+            {
+                Log.Error($"*** Error {ex.Status}/{ex.ErrorCode} creating twin {twinId} due to {ex.Message}");
+            }
+            
+        }
+
+        public async Task CommandLaunchThermostats(string[] cmd)
+        {
+            var thems = await hub.GetDevices();
+
+            try
+            {
+                if (thems != null)
+                {
+                    Log.Out($"Launching Thermostats...");
+                    foreach (Device twin in thems)
+                    {
+                        var cs = AzureIoTHub.GetDeviceConnectionString(twin);
+                        Process.Start("Thermostat-UI.exe", cs);
+                    }
+                }
+            }
+            catch (RequestFailedException ex)
+            {
+                Log.Error($"*** Error {ex.Status}/{ex.ErrorCode} due to {ex.Message}");
+            }
+        }
+
+
+        #endregion
+
 
         /// <summary>
         /// Get a twin with the specified id in a cycle
@@ -1194,6 +1315,7 @@ namespace BuildingClientApp
             ADTRoutes,
             SampleScenario,
             SampleTools,
+            IoTDevices
         }
 
         private Dictionary<string, CliInfo> commands;
@@ -1225,6 +1347,10 @@ namespace BuildingClientApp
                 { "ObserveProperties", new CliInfo { Command=CommandObserveProperties, Category = CliCategory.SampleScenario, Help="<twin id> <propertyName> <twin-id> <property name>... observes the selected properties on the selected twins" } },
                 { "DeleteAllTwins", new CliInfo { Command=CommandDeleteAllTwins, Category = CliCategory.SampleTools, Help="Deletes all the twins in your instance" } },
                 { "DeleteAllModels", new CliInfo { Command=CommandDeleteAllModels, Category = CliCategory.SampleTools, Help="Deletes all models in your instance" } },
+                { "DeleteAllDevices", new CliInfo { Command=CommandDeleteAllDevices, Category = CliCategory.IoTDevices, Help="Deletes all devices in your IoT Hub" } },
+                { "CreateThermostats", new CliInfo { Command=CommandCreateThermostats, Category = CliCategory.IoTDevices, Help="Creates thermostats for your twins" } },
+                { "ListThermostats", new CliInfo { Command=CommandListThermostats, Category = CliCategory.IoTDevices, Help="Lists thermostats for your twins" } },
+                { "LaunchThermostats", new CliInfo { Command=CommandLaunchThermostats, Category = CliCategory.IoTDevices, Help="Launch thermostat UIs for twins" } },
                 { "LoadModelsFromDirectory", new CliInfo { Command=CommandLoadModels, Category = CliCategory.SampleTools, Help="<directory-path> <extension(json by default)> [nosub]" } },
                 { "Exit", new CliInfo { Command=CommandExit, Category = CliCategory.SampleTools, Help="Exits the program" } },
             };
@@ -1256,6 +1382,8 @@ namespace BuildingClientApp
                 CliPrintCategoryCommands(CliCategory.ADTQuery);
                 Log.Alert("ADT Commands for Event Routes:");
                 CliPrintCategoryCommands(CliCategory.ADTRoutes);
+                Log.Alert("Device Commands:");
+                CliPrintCategoryCommands(CliCategory.IoTDevices);
                 Log.Alert("Others:");
                 CliPrintCategoryCommands(CliCategory.SampleTools);
             }

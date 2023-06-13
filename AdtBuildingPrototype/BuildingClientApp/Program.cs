@@ -12,11 +12,14 @@ namespace BuildingClientApp
     {
         private static DigitalTwinsClient client;
 
+        private static AzureIoTHub hub;
+
         static async Task Main()
         {
             SetWindowSize();
 
             Uri adtInstanceUrl;
+            string hubHost;
             try
             {
                 // Read configuration data from the 
@@ -24,6 +27,7 @@ namespace BuildingClientApp
                     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
                     .Build();
                 adtInstanceUrl = new Uri(config["instanceUrl"]);
+                hubHost = config["iotHub"];
             }
             catch (Exception ex) when (ex is FileNotFoundException || ex is UriFormatException)
             {
@@ -34,10 +38,11 @@ namespace BuildingClientApp
             Log.Ok("Authenticating...");
             var credential = new DefaultAzureCredential();
             client = new DigitalTwinsClient(adtInstanceUrl, credential);
+            hub = new AzureIoTHub() { IotHubConnectionString = hubHost };
 
             Log.Ok($"Service client created – ready to go");
 
-            var CommandLoopInst = new CommandLoop(client);
+            var CommandLoopInst = new CommandLoop(client, hub);
 
             await CommandLoopInst.CommandHelp(new string[] { "help" });
             await CommandLoopInst.CliCommandInterpreter();

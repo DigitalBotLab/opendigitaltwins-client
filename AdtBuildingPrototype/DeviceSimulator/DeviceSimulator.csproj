@@ -20,9 +20,5 @@
     <PackageReference Include="Microsoft.Azure.Devices.Client" Version="1.37.2" />
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj" />
-  </ItemGroup>
   
 </Project>

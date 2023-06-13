@@ -1,4 +1,3 @@
-using Common;
 using Microsoft.Azure.Devices;
 using System.Text.RegularExpressions;
 using System.Timers;
