@@ -1145,13 +1145,20 @@ namespace BuildingClientApp
 
             try
             {
+                string path = Directory.GetCurrentDirectory();
+                var directoryInfo1 = System.IO.Directory.GetParent(path);
+                var directoryInfo2 = System.IO.Directory.GetParent(directoryInfo1.ToString());
+                var directoryInfo3 = System.IO.Directory.GetParent(directoryInfo2.ToString());
+                var directoryInfo4 = System.IO.Directory.GetParent(directoryInfo3.ToString());
+                var ThermoPath = Path.Combine(directoryInfo4.ToString(), "Thermostat-UI\\bin\\Debug\\net7.0-windows\\Thermostat-UI.exe");
+
                 if (thems != null)
                 {
                     Log.Out($"Launching Thermostats...");
                     foreach (Device twin in thems)
                     {
                         var cs = AzureIoTHub.GetDeviceConnectionString(twin);
-                        Process.Start("Thermostat-UI.exe", cs);
+                        Process.Start(ThermoPath, cs);
                     }
                 }
             }
