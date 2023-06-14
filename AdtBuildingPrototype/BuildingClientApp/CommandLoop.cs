@@ -1105,7 +1105,13 @@ namespace BuildingClientApp
                     Log.Out($"Listing Thermostats...");
                     foreach (Device twin in thems)
                     {
-                        Log.Out($"{twin.Id}");
+                        var flrAndId = twin.Id.Substring(10, (twin.Id.Length -10));
+                        var flr = flrAndId.Split("-");
+
+                        if (cmd[1] == flr[0])
+                        {
+                            Log.Out($"{twin.Id}");
+                        }
                     }
                 }
             }
@@ -1157,9 +1163,15 @@ namespace BuildingClientApp
                     Log.Out($"Launching Thermostats...");
                     foreach (Device twin in thems)
                     {
-                        var cs = AzureIoTHub.GetDeviceConnectionString(twin);
-                        Process.Start(ThermoPath, cs);
-                    }
+                        var flrAndId = twin.Id.Substring(10, (twin.Id.Length -10));
+                        var flr = flrAndId.Split("-");
+
+                        if (cmd[1] == flr[0])
+                        {
+                            var cs = AzureIoTHub.GetDeviceConnectionString(twin);
+                            Process.Start(ThermoPath, cs);
+                        }
+                    }                    
                 }
             }
             catch (RequestFailedException ex)
@@ -1355,9 +1367,9 @@ namespace BuildingClientApp
                 { "DeleteAllTwins", new CliInfo { Command=CommandDeleteAllTwins, Category = CliCategory.SampleTools, Help="Deletes all the twins in your instance" } },
                 { "DeleteAllModels", new CliInfo { Command=CommandDeleteAllModels, Category = CliCategory.SampleTools, Help="Deletes all models in your instance" } },
                 { "DeleteAllDevices", new CliInfo { Command=CommandDeleteAllDevices, Category = CliCategory.IoTDevices, Help="Deletes all devices in your IoT Hub" } },
-                { "CreateThermostats", new CliInfo { Command=CommandCreateThermostats, Category = CliCategory.IoTDevices, Help="Creates thermostats for your twins" } },
-                { "ListThermostats", new CliInfo { Command=CommandListThermostats, Category = CliCategory.IoTDevices, Help="Lists thermostats for your twins" } },
-                { "LaunchThermostats", new CliInfo { Command=CommandLaunchThermostats, Category = CliCategory.IoTDevices, Help="Launch thermostat UIs for twins" } },
+                { "CreateThermostats", new CliInfo { Command=CommandCreateThermostats, Category = CliCategory.IoTDevices, Help="Creates thermostats for all your twins" } },
+                { "ListThermostats", new CliInfo { Command=CommandListThermostats, Category = CliCategory.IoTDevices, Help="<floor-number> Lists thermostats for your twins" } },
+                { "LaunchThermostats", new CliInfo { Command=CommandLaunchThermostats, Category = CliCategory.IoTDevices, Help="<floor-number> Launch thermostat UIs for twins" } },
                 { "LoadModelsFromDirectory", new CliInfo { Command=CommandLoadModels, Category = CliCategory.SampleTools, Help="<directory-path> <extension(json by default)> [nosub]" } },
                 { "Exit", new CliInfo { Command=CommandExit, Category = CliCategory.SampleTools, Help="Exits the program" } },
             };
