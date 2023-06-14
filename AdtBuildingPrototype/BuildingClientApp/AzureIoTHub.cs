@@ -56,9 +56,12 @@ namespace BuildingClientApp
             return device;
         }
 
-        public static string GetDeviceConnectionString(Device device)
+        public string GetDeviceConnectionString(Device device)
         {
-            return $"HostName={device};DeviceId={device.Id};SharedAccessKey={device.Authentication.SymmetricKey.PrimaryKey}";
+            var parsedConnectionString = Microsoft.Azure.Devices.IotHubConnectionStringBuilder.Create(iotHubConnectionString);
+
+            var hostName = parsedConnectionString.HostName;
+            return $"HostName={hostName};DeviceId={device.Id};SharedAccessKey={device.Authentication.SymmetricKey.PrimaryKey}";
         }
 
         public async Task DeleteDevicesAsync()

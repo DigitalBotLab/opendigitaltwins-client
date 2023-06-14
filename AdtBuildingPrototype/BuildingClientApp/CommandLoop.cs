@@ -1168,8 +1168,9 @@ namespace BuildingClientApp
 
                         if (cmd[1] == flr[0])
                         {
-                            var cs = AzureIoTHub.GetDeviceConnectionString(twin);
+                            var cs = hub.GetDeviceConnectionString(twin);
                             Process.Start(ThermoPath, cs);
+                            //HostName=bldg-IoThub-6uad.azure-devices.net;DeviceId=thermostat1-9;SharedAccessKey=qYWGLehFN/qmHnTdDtaThfSINyPrIdXzg2FO+ipMWPM=
                         }
                     }                    
                 }
