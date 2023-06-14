@@ -2,7 +2,7 @@
   "profiles": {
     "Thermostat-UI": {
       "commandName": "Project",
-      "commandLineArgs": "HostName=gavin-iot-hub.azure-devices.net;DeviceId=thermostat1-1;SharedAccessKey=wA+XRvz2rEota8rbjjaIiwPDy2i21aOArj5seFJV3WU="
+      "commandLineArgs": ""
     }
   }
 }
