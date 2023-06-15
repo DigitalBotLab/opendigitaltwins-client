@@ -1,8 +1,13 @@
-﻿using Azure.DigitalTwins.Core;
+﻿using Azure.Core.Pipeline;
+using Azure;
+using Azure.DigitalTwins.Core;
 using Azure.Identity;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -57,5 +62,7 @@ namespace BuildingClientApp
                 Console.SetWindowSize(width, height);
             }
         }
+
+        
     }
 }

@@ -18,7 +18,7 @@ namespace BuildingFunctionsApp
     public class ProcessHubToDTEvents
     {
         private static readonly HttpClient httpClient = new HttpClient();
-        private static string adtServiceUrl = Environment.GetEnvironmentVariable("ADT_ENDPOINT");
+        private static string adtServiceUrl = Environment.GetEnvironmentVariable("ADT_SERVICE_URL");
 
         [FunctionName("ProcessHubToDTEvents")]
         public async void Run([EventGridTrigger]EventGridEvent eventGridEvent, ILogger log)

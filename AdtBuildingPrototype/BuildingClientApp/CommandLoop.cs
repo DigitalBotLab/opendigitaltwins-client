@@ -1167,10 +1167,12 @@ namespace BuildingClientApp
                         var flr = flrAndId.Split("-");
 
                         if (cmd[1] == flr[0])
+
+                        //Test Therm 1-1
+                        //if (flrAndId == "1-1")
                         {
                             var cs = hub.GetDeviceConnectionString(twin);
                             Process.Start(ThermoPath, cs);
-                            //HostName=bldg-IoThub-6uad.azure-devices.net;DeviceId=thermostat1-9;SharedAccessKey=qYWGLehFN/qmHnTdDtaThfSINyPrIdXzg2FO+ipMWPM=
                         }
                     }                    
                 }
@@ -1182,7 +1184,7 @@ namespace BuildingClientApp
         }
 
 
-        #endregion
+#endregion
 
 
         /// <summary>
