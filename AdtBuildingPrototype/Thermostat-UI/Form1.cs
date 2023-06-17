@@ -44,7 +44,7 @@ namespace Thermostat_UI
 
 
             //Set UI labels
-            Text=deviceId;
+            Text = deviceId;
 
         }
 
@@ -148,6 +148,12 @@ namespace Thermostat_UI
         private void groupBox2_Enter(object sender, EventArgs e)
         {
 
+        }
+
+        private void trackBar2_ValueChanged(object sender, EventArgs e)
+        {
+            var newInt = trackBar2.Value * 1000;
+            timer1.Interval = newInt;
         }
     }
 }
