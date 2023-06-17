@@ -14,7 +14,6 @@ DeviceSimulator/Thermostat-UI/obj/
 /AdtBuildingPrototype/BuildingFunctionsApp/bin/Release/netcoreapp3.1
 /AdtBuildingPrototype/BuildingFunctionsApp/obj/Release/netcoreapp3.1
 /AdtBuildingPrototype/BuildingFunctionsApp/local.settings.json
-/AdtBuildingPrototype/BuildingClientApp/appsettings.json
 /AdtBuildingPrototype/Common/obj
 /AdtBuildingPrototype/Common/bin/Debug/net7.0
 /AdtBuildingPrototype/DeviceSimulator/bin/Debug/net7.0
@@ -40,6 +39,7 @@ AdtBuildingPrototype/Thermostat-UI/Properties/launchSettings.json
 /AdtBuildingPrototype/BuildingFunctionsApp/Properties/serviceDependencies.json
 /AdtBuildingPrototype/BuildingFunctionsApp/Properties/serviceDependencies.blg-func-rif2 - Zip Deploy.json.user
 /AdtBuildingPrototype/BuildingFunctionsApp/Properties/serviceDependencies.blg-func-rif2 - Zip Deploy.json
-/AdtBuildingPrototype/BuildingFunctionsApp/BuildingFunctionsApp.csproj.user
-/AdtBuildingPrototype/BuildingFunctionsApp/BuildingFunctionsApp.csproj
-/AdtBuildingPrototype/BuildingFunctionsApp/Properties
+/AdtBuildingPrototype/BuildingFunctionsApp/Properties/serviceDependencies.gavin-twin-func - Zip Deploy.json.user
+/AdtBuildingPrototype/BuildingFunctionsApp/Properties/serviceDependencies.gavin-twin-func - Zip Deploy.json
+/AdtBuildingPrototype/BuildingFunctionsApp/Properties/serviceDependencies.bldg-func-6uad - Zip Deploy.json.user
+/AdtBuildingPrototype/BuildingFunctionsApp/Properties/serviceDependencies.bldg-func-6uad - Zip Deploy.json
