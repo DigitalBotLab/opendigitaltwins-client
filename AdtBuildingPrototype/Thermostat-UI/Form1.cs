@@ -106,6 +106,7 @@ namespace Thermostat_UI
 
             // Send the message
             Log(String.Format("Sending temp...{0}", Temperature));
+            lblCurrentTemp.Text = Temperature.ToString();
             await hub.SendDeviceToCloudMessageAsync((double)Temperature);
         }
 

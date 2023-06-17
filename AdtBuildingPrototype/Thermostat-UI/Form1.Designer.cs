@@ -41,23 +41,13 @@ namespace Thermostat_UI
             label1=new Label();
             lblCurrentTemp=new Label();
             label5=new Label();
-            grpMode=new GroupBox();
-            radioButton1=new RadioButton();
-            radioButton2=new RadioButton();
-            radioButton3=new RadioButton();
-            grpFan=new GroupBox();
-            radioButton4=new RadioButton();
-            radioButton5=new RadioButton();
-            radioButton6=new RadioButton();
             ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
-            grpMode.SuspendLayout();
-            grpFan.SuspendLayout();
             SuspendLayout();
             // 
             // txtLog
             // 
             txtLog.Dock=DockStyle.Bottom;
-            txtLog.Location=new Point(0, 208);
+            txtLog.Location=new Point(0, 97);
             txtLog.Multiline=true;
             txtLog.Name="txtLog";
             txtLog.Size=new Size(359, 52);
@@ -66,7 +56,7 @@ namespace Thermostat_UI
             // splitter1
             // 
             splitter1.Dock=DockStyle.Bottom;
-            splitter1.Location=new Point(0, 205);
+            splitter1.Location=new Point(0, 94);
             splitter1.Name="splitter1";
             splitter1.Size=new Size(359, 3);
             splitter1.TabIndex=25;
@@ -148,106 +138,11 @@ namespace Thermostat_UI
             label5.Text="Set Point:";
             label5.Click+=label5_Click;
             // 
-            // grpMode
-            // 
-            grpMode.Controls.Add(radioButton3);
-            grpMode.Controls.Add(radioButton2);
-            grpMode.Controls.Add(radioButton1);
-            grpMode.Location=new Point(12, 83);
-            grpMode.Name="grpMode";
-            grpMode.Size=new Size(335, 49);
-            grpMode.TabIndex=33;
-            grpMode.TabStop=false;
-            grpMode.Text="Mode";
-            grpMode.Enter+=groupBox1_Enter;
-            // 
-            // radioButton1
-            // 
-            radioButton1.AutoSize=true;
-            radioButton1.Location=new Point(25, 22);
-            radioButton1.Name="radioButton1";
-            radioButton1.Size=new Size(67, 19);
-            radioButton1.TabIndex=0;
-            radioButton1.TabStop=true;
-            radioButton1.Text="Cooling";
-            radioButton1.UseVisualStyleBackColor=true;
-            // 
-            // radioButton2
-            // 
-            radioButton2.AutoSize=true;
-            radioButton2.Location=new Point(130, 22);
-            radioButton2.Name="radioButton2";
-            radioButton2.Size=new Size(67, 19);
-            radioButton2.TabIndex=1;
-            radioButton2.TabStop=true;
-            radioButton2.Text="Heating";
-            radioButton2.UseVisualStyleBackColor=true;
-            // 
-            // radioButton3
-            // 
-            radioButton3.AutoSize=true;
-            radioButton3.Location=new Point(233, 22);
-            radioButton3.Name="radioButton3";
-            radioButton3.Size=new Size(42, 19);
-            radioButton3.TabIndex=2;
-            radioButton3.TabStop=true;
-            radioButton3.Text="Off";
-            radioButton3.UseVisualStyleBackColor=true;
-            radioButton3.CheckedChanged+=radioButton3_CheckedChanged;
-            // 
-            // grpFan
-            // 
-            grpFan.Controls.Add(radioButton4);
-            grpFan.Controls.Add(radioButton5);
-            grpFan.Controls.Add(radioButton6);
-            grpFan.Location=new Point(12, 138);
-            grpFan.Name="grpFan";
-            grpFan.Size=new Size(335, 49);
-            grpFan.TabIndex=34;
-            grpFan.TabStop=false;
-            grpFan.Text="Fan";
-            grpFan.Enter+=groupBox2_Enter;
-            // 
-            // radioButton4
-            // 
-            radioButton4.AutoSize=true;
-            radioButton4.Location=new Point(233, 22);
-            radioButton4.Name="radioButton4";
-            radioButton4.Size=new Size(41, 19);
-            radioButton4.TabIndex=2;
-            radioButton4.TabStop=true;
-            radioButton4.Text="On";
-            radioButton4.UseVisualStyleBackColor=true;
-            // 
-            // radioButton5
-            // 
-            radioButton5.AutoSize=true;
-            radioButton5.Location=new Point(113, 22);
-            radioButton5.Name="radioButton5";
-            radioButton5.Size=new Size(72, 19);
-            radioButton5.TabIndex=1;
-            radioButton5.TabStop=true;
-            radioButton5.Text="Circulate";
-            radioButton5.UseVisualStyleBackColor=true;
-            // 
-            // radioButton6
-            // 
-            radioButton6.AutoSize=true;
-            radioButton6.Location=new Point(23, 22);
-            radioButton6.Name="radioButton6";
-            radioButton6.Size=new Size(51, 19);
-            radioButton6.TabIndex=0;
-            radioButton6.TabStop=true;
-            radioButton6.Text="Auto";
-            radioButton6.UseVisualStyleBackColor=true;
-            // 
             // Form1
             // 
             AutoScaleDimensions=new SizeF(7F, 15F);
             AutoScaleMode=AutoScaleMode.Font;
-            ClientSize=new Size(359, 260);
-            Controls.Add(grpFan);
-            Controls.Add(grpMode);
+            ClientSize=new Size(359, 149);
             Controls.Add(label5);
             Controls.Add(lblCurrentTemp);
             Controls.Add(label1);
@@ -261,10 +156,6 @@ namespace Thermostat_UI
             Text="Thermostat";
             Load+=Form1_Load;
             ((System.ComponentModel.ISupportInitialize)trackBar1).EndInit();
-            grpMode.ResumeLayout(false);
-            grpMode.PerformLayout();
-            grpFan.ResumeLayout(false);
-            grpFan.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -280,13 +171,5 @@ namespace Thermostat_UI
         private Label label1;
         private Label lblCurrentTemp;
         private Label label5;
-        private GroupBox grpMode;
-        private RadioButton radioButton3;
-        private RadioButton radioButton2;
-        private RadioButton radioButton1;
-        private GroupBox grpFan;
-        private RadioButton radioButton4;
-        private RadioButton radioButton5;
-        private RadioButton radioButton6;
     }
 }
