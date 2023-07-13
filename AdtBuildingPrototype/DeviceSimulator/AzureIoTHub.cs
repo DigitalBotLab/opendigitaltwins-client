@@ -3,6 +3,7 @@ using Microsoft.Azure.Devices;
 using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Common.Exceptions;
 using System;
+using System.Configuration;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -12,14 +13,7 @@ namespace DeviceSimulator
 {
     public static class AzureIoTHub
     {
-        /// <summary>
-        /// Please replace with correct connection string value
-        /// The connection string could be got from Azure IoT Hub -> Shared access policies -> iothubowner -> Connection String:
-        /// </summary>
-        private const string iotHubConnectionString = "HostName=bldg-IoThub-6uad.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=Va2ASJ6dFfw0t0fsab8hV0yoyzjlxQiVLYQhdDMtsxs=";
-
-
-        public static async Task ReceiveMessagesFromDeviceAsync(CancellationToken cancelToken)
+        public static async Task ReceiveMessagesFromDeviceAsync(string iotHubConnectionString, CancellationToken cancelToken)
         {
             try
             {

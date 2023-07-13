@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,12 +10,13 @@ namespace DeviceSimulator
         public static async Task Main(string[] args)
         {
             // Sample 2: comment above line and uncomment following line, FIRST YOU NEED SPECIFY connectingString and deviceConnectionString in AzureIoTHub.cs
-            await ReceiveD2c("");
+            await ReceiveD2c();
         }
 
-        private static async Task ReceiveD2c(string connString)
+        private static async Task ReceiveD2c()
         {
             var tokenSource = new CancellationTokenSource();
+            var connString = ConfigurationManager.AppSettings["iotHub"];
 
             Console.CancelKeyPress += (s, e) =>
             {
@@ -26,7 +28,7 @@ namespace DeviceSimulator
 
             await Task.WhenAll(
                 //AzureIoTHub.SendDeviceToCloudMessageAsync(tokenSource.Token),
-                AzureIoTHub.ReceiveMessagesFromDeviceAsync(tokenSource.Token));
+                AzureIoTHub.ReceiveMessagesFromDeviceAsync(connString, tokenSource.Token));
 
             tokenSource.Dispose();
         }
