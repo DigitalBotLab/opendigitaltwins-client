@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Threading.Tasks;
 using System.Net.Http;
 
 namespace BuildingFunctionsApp
@@ -21,7 +22,7 @@ namespace BuildingFunctionsApp
         private static string adtServiceUrl = Environment.GetEnvironmentVariable("ADT_SERVICE_URL");
 
         [FunctionName("ProcessHubToDTEvents")]
-        public async void Run([EventGridTrigger]EventGridEvent eventGridEvent, ILogger log)
+        public async Task Run([EventGridTrigger]EventGridEvent eventGridEvent, ILogger log)
         {
             // After this is deployed, you need to turn the Managed Identity Status to "On",
             // Grab Object Id of the function and assigned "Azure Digital Twins Owner (Preview)" role

@@ -29,7 +29,7 @@ namespace DeviceSimulator
                     string data = Encoding.UTF8.GetString(partitionEvent.Data.Body.ToArray());
                     string destination = partitionEvent.Data.SystemProperties["iothub-connection-device-id"].ToString();
 
-                    Console.WriteLine($"Message received. Partition: {partitionEvent.Partition.PartitionId} Data: '{destination}:{data}'");
+                    Console.WriteLine(DateTime.Now.ToString() + $" - Message received. Partition: {partitionEvent.Partition.PartitionId} Data: '{destination}:{data}'");
                 }
             }
             catch (TaskCanceledException) { } // do nothing
