@@ -49,7 +49,9 @@ namespace BuildingFunctionsApp
                 //Update twin using device temperature
                 var updateTwinData = new JsonPatchDocument();
                 updateTwinData.AppendReplace("/Temperature", temperature.Value<double>());
+                
                 //await client.UpdateDigitalTwinAsync(deviceId, updateTwinData);
+
                 await client.PublishTelemetryAsync(deviceId, Guid.NewGuid().ToString(), updateTwinData.ToString());
 
             }
