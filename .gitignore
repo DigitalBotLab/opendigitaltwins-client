@@ -45,3 +45,5 @@ AdtBuildingPrototype/Thermostat-UI/Properties/launchSettings.json
 /AdtBuildingPrototype/BuildingFunctionsApp/Properties/serviceDependencies.bldg-func-6uad - Zip Deploy.json
 /AdtBuildingPrototype/BuildingFunctionsApp/Properties
 /AdtBuildingPrototype/BuildingFunctionsApp/BuildingFunctionsApp.csproj.user
+/AdtBuildingPrototype/DeviceMonitor/bin/Debug/net7.0
+/AdtBuildingPrototype/DeviceMonitor/obj
