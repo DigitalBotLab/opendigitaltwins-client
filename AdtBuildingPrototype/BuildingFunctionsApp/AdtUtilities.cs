@@ -36,7 +36,6 @@ namespace BuildingFunctionsApp
                 {
                     return int.Parse(res.Value.Contents["Temperature"].ToString());
                 }
-                var data = System.Text.Json.JsonSerializer.Serialize(res.Value);
             }
             catch (RequestFailedException e)
             {

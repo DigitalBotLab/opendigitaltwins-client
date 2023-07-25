@@ -83,6 +83,8 @@ namespace BuildingFunctionsApp
 
                                     if (operation.Path.Equals("/Temperature") && operation.Value != temp)
                                     {
+                                        log.LogInformation($"Update Room Temp:  {parentId} : {operation.Value} ");
+
                                         //Temp has changed, Update the Room
                                         await AdtUtilities.UpdateTwinPropertyAsync(client, parentId, operation.Path, float.Parse(operation.Value.ToString()), log);
                                     }
