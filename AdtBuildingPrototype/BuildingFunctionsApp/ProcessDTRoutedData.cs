@@ -5,6 +5,7 @@ using Azure.Core.Pipeline;
 using Azure.DigitalTwins.Core;
 using Azure.Identity;
 using Azure.Messaging.EventGrid;
+using Microsoft.AspNetCore.Routing.Template;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.EventGrid;
 using Microsoft.Extensions.Logging;
@@ -64,27 +65,37 @@ namespace BuildingFunctionsApp
                     string parentId = await AdtUtilities.FindParentAsync(client, twinId, "contains", log);
                     if (parentId != null)
                     {
-                        log.LogInformation($"Parent found {parentId}");
-
-                        try
+                        if (parentId.Contains("room"))
                         {
-                            var operations = JsonConvert.DeserializeObject<Operation[]>(message["data"].ToString());
+                            //Only if we are dealing with a Room now, get the temp
+                            int temp = await AdtUtilities.GetRoomTemperatureAsync(client, parentId, log);
+                            log.LogInformation($"Room found {parentId} temperature: {temp}");
 
-                            foreach (var operation in operations)
+                            try
                             {
-                                log.LogInformation("Operation: " + operation.Op);
-                                log.LogInformation("Path: " + operation.Path);
-                                log.LogInformation("Value: " + operation.Value);
+                                var operations = JsonConvert.DeserializeObject<Operation[]>(message["data"].ToString());
 
-                                if (operation.Path.Equals("/Temperature"))
+                                foreach (var operation in operations)
                                 {
-                                    await AdtUtilities.UpdateTwinPropertyAsync(client, parentId, operation.Path, float.Parse(operation.Value.ToString()), log);
+                                    log.LogInformation("Operation: " + operation.Op);
+                                    log.LogInformation("Path: " + operation.Path);
+                                    log.LogInformation("Value: " + operation.Value);
+
+                                    if (operation.Path.Equals("/Temperature") && operation.Value != temp)
+                                    {
+                                        //Temp has changed, Update the Room
+                                        await AdtUtilities.UpdateTwinPropertyAsync(client, parentId, operation.Path, float.Parse(operation.Value.ToString()), log);
+                                    }
+                                    else
+                                    {
+                                        log.LogInformation($"Update skipped: {parentId} no temperature change: {temp}");
+                                    }
                                 }
                             }
-                        }
-                        catch (JsonException ex)
-                        {
-                            log.LogError("Error parsing JSON: " + ex.Message);
+                            catch (JsonException ex)
+                            {
+                                log.LogError("Error parsing JSON: " + ex.Message);
+                            }
                         }
                     }
                 }

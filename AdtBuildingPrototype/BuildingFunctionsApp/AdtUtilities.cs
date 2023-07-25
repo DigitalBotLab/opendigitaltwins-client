@@ -27,6 +27,24 @@ namespace BuildingFunctionsApp
             return null;
         }
 
+        public static async Task<int> GetRoomTemperatureAsync(DigitalTwinsClient client, string roomId, ILogger log)
+        {
+            try
+            {
+                Response<BasicDigitalTwin> res = await client.GetDigitalTwinAsync<BasicDigitalTwin>(roomId);
+                if (res != null)
+                {
+                    return int.Parse(res.Value.Contents["Temperature"].ToString());
+                }
+                var data = System.Text.Json.JsonSerializer.Serialize(res.Value);
+            }
+            catch (RequestFailedException e)
+            {
+                log.LogError($"Error {e.Status}: {e.Message}");
+            }
+            return 0;
+        }
+
         public static async Task<string> FindParentByQueryAsync(DigitalTwinsClient client, string childId, ILogger log)
         {
             string query = "SELECT Parent " +
