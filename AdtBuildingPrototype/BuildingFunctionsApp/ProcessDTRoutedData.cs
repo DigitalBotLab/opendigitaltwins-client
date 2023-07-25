@@ -16,6 +16,14 @@ using System.Threading.Tasks;
 
 namespace BuildingFunctionsApp
 {
+
+    public class Operation
+    {
+        public string Op { get; set; }
+        public string Path { get; set; }
+        public int Value { get; set; }
+    }
+
     // This class processes property change notification from ADT, reads twin room id that's associated to the event,
     // finds the parent floor twin that contains this twin and sets the parent Temperature property
     // to the value from the notification.
@@ -56,19 +64,27 @@ namespace BuildingFunctionsApp
                     string parentId = await AdtUtilities.FindParentAsync(client, twinId, "contains", log);
                     if (parentId != null)
                     {
-                        // Read properties which values have been changed in each operation
-                        foreach (var operation in message["data"]["patch"])
-                        {
-                            string opValue = (string)operation["op"];
-                            if (opValue.Equals("replace"))
-                            {
-                                string propertyPath = ((string)operation["path"]);
+                        log.LogInformation($"Parent found {parentId}");
 
-                                if (propertyPath.Equals("/Temperature"))
+                        try
+                        {
+                            var operations = JsonConvert.DeserializeObject<Operation[]>(message["data"].ToString());
+
+                            foreach (var operation in operations)
+                            {
+                                log.LogInformation("Operation: " + operation.Op);
+                                log.LogInformation("Path: " + operation.Path);
+                                log.LogInformation("Value: " + operation.Value);
+
+                                if (operation.Path.Equals("/Temperature"))
                                 {
-                                    await AdtUtilities.UpdateTwinPropertyAsync(client, parentId, propertyPath, operation["value"].Value<float>(), log);
+                                    await AdtUtilities.UpdateTwinPropertyAsync(client, parentId, operation.Path, float.Parse(operation.Value.ToString()), log);
                                 }
                             }
+                        }
+                        catch (JsonException ex)
+                        {
+                            log.LogError("Error parsing JSON: " + ex.Message);
                         }
                     }
                 }
