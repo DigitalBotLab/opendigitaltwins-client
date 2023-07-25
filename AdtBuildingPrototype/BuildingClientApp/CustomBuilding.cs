@@ -74,14 +74,14 @@ namespace BuildingClientApp
                     {
                         "CreateTwin", "dtmi:digitalbotlab:DigitalTwins:Room;1", roomId,
                         "DisplayName", "string", roomName,
+                        "Temperature", "double", "75"
                     });
 
                     await cl.CommandCreateDigitalTwin(new string[]
                     {
                         "CreateTwin", "dtmi:digitalbotlab:DigitalTwins:Thermostat;1", thermoId,
                         "DisplayName", "string", thermoName,
-                        "FirmwareVersion", "string", "1.3.9",
-                        "Temperature", "double", "75",
+                        "FirmwareVersion", "string", "1.3.9"
                     });
 
                     Log.Out($"Creating edges between the Floor and Room");

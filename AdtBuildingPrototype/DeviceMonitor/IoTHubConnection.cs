@@ -15,7 +15,7 @@ using Microsoft.Azure.Amqp.Sasl;
 using Microsoft.Azure.Amqp.Transport;
 using Microsoft.Azure.Devices;
 
-namespace DeviceSimulator
+namespace DeviceMonitor
 {
     /// <summary>
     /// A transient connection to the IoT Hub service, providing a set of utility-type operations that
