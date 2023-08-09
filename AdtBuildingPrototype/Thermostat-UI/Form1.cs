@@ -155,6 +155,11 @@ namespace Thermostat_UI
             var newInt = trackBar2.Value * 1000;
             timer1.Interval = newInt;
         }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
 

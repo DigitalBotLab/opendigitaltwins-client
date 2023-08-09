@@ -147,7 +147,7 @@ namespace Thermostat_UI
             // 
             trackBar2.Location=new Point(125, 75);
             trackBar2.Maximum=30;
-            trackBar2.Minimum=5;
+            trackBar2.Minimum=1;
             trackBar2.Name="trackBar2";
             trackBar2.Size=new Size(171, 45);
             trackBar2.TabIndex=33;
@@ -171,7 +171,8 @@ namespace Thermostat_UI
             label6.Name="label6";
             label6.Size=new Size(13, 15);
             label6.TabIndex=35;
-            label6.Text="5";
+            label6.Text="1";
+            label6.Click+=label6_Click;
             // 
             // label7
             // 

@@ -15,6 +15,16 @@
       "schema": "boolean"
     },
     {
+      "@type": "Property",
+      "name": "Temperature",
+      "schema": "double"
+    },
+    {
+      "@type": "Property",
+      "name": "Occupied",
+      "schema": "boolean"
+    },
+    {
       "@type": "Relationship",
       "name": "contains",
       "displayName": "contains",

@@ -15,7 +15,7 @@
       "schema": "string"
     },
     {
-      "@type": "Property",
+      "@type": "Telemetry",
       "name": "Temperature",
       "schema": "double"
     },

@@ -3,7 +3,7 @@ using System.Configuration;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DeviceSimulator
+namespace DeviceMonitor
 {
     public class Program
     {
