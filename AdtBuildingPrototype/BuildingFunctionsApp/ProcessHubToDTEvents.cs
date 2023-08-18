@@ -42,6 +42,8 @@ namespace BuildingFunctionsApp
                 // Reading deviceId and temperature for IoT Hub JSON
                 JObject deviceMessage = (JObject)JsonConvert.DeserializeObject(eventGridEvent.Data.ToString());
                 string deviceId = (string)deviceMessage["systemProperties"]["iothub-connection-device-id"];
+
+
                 var temperature = deviceMessage["body"]["Temperature"];
 
                 log.LogInformation($"Device:{deviceId} Temperature is:{temperature}");
