@@ -47,3 +47,4 @@ AdtBuildingPrototype/Thermostat-UI/Properties/launchSettings.json
 /AdtBuildingPrototype/BuildingFunctionsApp/BuildingFunctionsApp.csproj.user
 /AdtBuildingPrototype/DeviceMonitor/bin/Debug/net7.0
 /AdtBuildingPrototype/DeviceMonitor/obj
+AdtBuildingPrototype/BuildingClientApp/appsettings.json
